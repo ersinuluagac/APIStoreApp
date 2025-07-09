@@ -11,8 +11,10 @@ namespace Repositories.EFCore
 {
     public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
+        // Dependency injection of the RepositoryContext
         protected readonly RepositoryContext _context;
 
+        // Constructor to initialize the context
         public RepositoryBase(RepositoryContext context)
         {
             _context = context;

@@ -13,7 +13,7 @@ namespace Repositories.EFCore
     {
         public BookRepository(RepositoryContext context) : base(context)
         {
-
+            // This constructor initializes the base class with the context.
         }
 
         public void CreateOneBook(Book book) => Create(book);

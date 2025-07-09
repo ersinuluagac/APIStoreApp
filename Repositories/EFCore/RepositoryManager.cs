@@ -9,9 +9,12 @@ namespace Repositories.EFCore
 {
     public class RepositoryManager : IRepositoryManager
     {
+        // The database context for repository operations.
         private readonly RepositoryContext _context;
+        // Lazily initialized instance of the book repository.
         private readonly Lazy<IBookRepository> _bookRepository;
 
+        // Constructor for RepositoryManager, injecting the database context.
         public RepositoryManager(RepositoryContext context)
         {
             _context = context;

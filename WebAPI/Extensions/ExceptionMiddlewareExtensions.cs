@@ -8,6 +8,11 @@ namespace WebAPI.Extensions
 {
     public static class ExceptionMiddlewareExtensions
     {
+        /// <summary>
+        /// Configures global exception handling for the application.
+        /// </summary>
+        /// <param name="app">The application builder.</param>
+        /// <param name="logger">The logger service.</param>
         public static void ConfigureExceptionHandler(this WebApplication app, ILoggerService logger)
         {
             app.UseExceptionHandler(appError =>
