@@ -1,58 +1,61 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NLog;
+using Presentation.ActionFilters;
 using Repositories.EFCore;
 using Services.Contracts;
 using WebAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-LogManager.Setup().LoadConfigurationFromFile(String.Concat(Directory.GetCurrentDirectory(), "/nlog.config")); // Load NLog configuration from file
+LogManager.Setup().LoadConfigurationFromFile(String.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
-builder.Services.AddControllers(config => // Add MVC controllers with specific configuration
+builder.Services.AddControllers(config =>
 {
     config.RespectBrowserAcceptHeader = true;
     config.ReturnHttpNotAcceptable = true;
 })
-    .AddCustomCsvFormatter() // Add custom CSV formatter for handling CSV requests and responses
-    .AddXmlDataContractSerializerFormatters() // Add XML formatter for handling XML requests and responses
-    .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly) // Add application parts from the specified assembly
-    .AddNewtonsoftJson(); // Add Newtonsoft JSON formatter for handling JSON requests and responses
+    .AddCustomCsvFormatter()
+    .AddXmlDataContractSerializerFormatters()
+    .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly)
+    .AddNewtonsoftJson();
 
-builder.Services.Configure<ApiBehaviorOptions>(options => // Configure API behavior options
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
 });
 
-builder.Services.AddEndpointsApiExplorer(); // Add support for API endpoint exploration
-builder.Services.AddSwaggerGen(); // Add Swagger generation for API documentation
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-builder.Services.ConfigureSqlContext(builder.Configuration); // Configure SQL context using connection string from configuration
-builder.Services.ConfigureRepositoryManager(); // Configure repository manager for data access
-builder.Services.ConfigureServiceManager(); // Configure service manager for business logic
-builder.Services.ConfigureLoggerService(); // Configure custom logger service for logging
-builder.Services.AddAutoMapper(typeof(Program)); // Add AutoMapper for object mapping
+builder.Services.ConfigureSqlContext(builder.Configuration);
+builder.Services.ConfigureRepositoryManager();
+builder.Services.ConfigureServiceManager();
+builder.Services.ConfigureLoggerService();
+builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.ConfigureActionFilters();
 
-var app = builder.Build(); // Build the application
+var app = builder.Build();
 
-var logger = app.Services.GetRequiredService<ILoggerService>(); // Get the logger service from the service provider
-app.ConfigureExceptionHandler(logger); // Configure global exception handling with a custom logger
+var logger = app.Services.GetRequiredService<ILoggerService>();
+app.ConfigureExceptionHandler(logger);
 
-if (app.Environment.IsDevelopment()) // Use Swagger in development environment
+if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger(); // Enable Swagger middleware
-    app.UseSwaggerUI(); // Enable Swagger UI middleware
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-if (app.Environment.IsProduction()) // Use HSTS in production environment
+if (app.Environment.IsProduction())
 {
-    app.UseHsts(); // Enable HTTP Strict Transport Security
+    app.UseHsts();
 }
 
-app.UseHttpsRedirection(); // Enable HTTPS redirection
+app.UseHttpsRedirection();
 
-app.UseAuthorization(); // Enable authorization middleware
+app.UseAuthorization();
 
-app.MapControllers(); // Map controllers to routes
+app.MapControllers();
 
-app.Run(); // Run the application
+app.Run();
