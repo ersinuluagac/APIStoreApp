@@ -26,7 +26,10 @@ namespace Presentation.Controllers
             var pagedResult = await _manager
                 .BookService
                 .GetAllBooksAsync(bookParameters, false);
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.metaData));
+
+            Response.Headers
+                .Add("X-Pagination", JsonSerializer.Serialize(pagedResult.metaData));
+
             return Ok(pagedResult.books);
         }
         [HttpGet("{id:int}")]
