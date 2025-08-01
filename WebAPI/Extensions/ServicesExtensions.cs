@@ -63,6 +63,9 @@ namespace WebAPI.Extensions
                 {
                     systemTextJsonFormatter.SupportedMediaTypes
                     .Add("application/vnd.uluagac.hateoas+json");
+
+                    systemTextJsonFormatter.SupportedMediaTypes
+                    .Add("application/vnd.uluagac.apiroot+json");
                 }
 
                 var xmlOutputFormatter = config
@@ -73,6 +76,9 @@ namespace WebAPI.Extensions
                 {
                     xmlOutputFormatter.SupportedMediaTypes
                     .Add("applicaton/vnd.uluagac.hateoas+xml");
+
+                    xmlOutputFormatter.SupportedMediaTypes
+                    .Add("application/vnd.uluagac.apiroot+xml");
                 }
             });
         }
