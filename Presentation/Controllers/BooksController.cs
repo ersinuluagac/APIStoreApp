@@ -1,5 +1,6 @@
 ﻿using Entities.DataTransferObjects;
 using Entities.RequestFeatures;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
@@ -12,6 +13,8 @@ namespace Presentation.Controllers
     [ServiceFilter(typeof(LogFilterAttribute))]
     [ApiController]
     [Route("api/books")]
+    //[ResponseCache(CacheProfileName = "5mins")]
+    //[HttpCacheExpiration(CacheLocation = CacheLocation.Public, MaxAge = 80)]
     public class BooksController : ControllerBase
     {
         private readonly IServiceManager _manager;
@@ -20,9 +23,11 @@ namespace Presentation.Controllers
         {
             _manager = manager;
         }
+
         [HttpHead]
         [HttpGet(Name = "GetAllBooksAsync")]
         [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
+        //[ResponseCache(Duration = 60)]
         public async Task<IActionResult> GetAllBooksAsync([FromQuery] BookParameters bookParameters)
         {
             var linkParameters = new LinkParameters()
@@ -42,6 +47,7 @@ namespace Presentation.Controllers
                 ? Ok(result.linkResponse.LinkedEntities)
                 : Ok(result.linkResponse.ShapedEntities);
         }
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetOneBookAsync([FromRoute(Name = "id")] int id)
         {
@@ -50,6 +56,7 @@ namespace Presentation.Controllers
                 .GetOneBookByIdAsync(id, false);
             return Ok(book);
         }
+
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [HttpPost(Name = "CreateOneBookAsync")]
         public async Task<IActionResult> CreateOneBookAsync([FromBody] BookDtoForInsertion bookDto)
@@ -57,6 +64,7 @@ namespace Presentation.Controllers
             var book = await _manager.BookService.CreateOneBookAsync(bookDto);
             return StatusCode(201, book);
         }
+
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateOneBookAsync([FromRoute(Name = "id")] int id, [FromBody] BookDtoForUpdate bookDto)
@@ -64,12 +72,14 @@ namespace Presentation.Controllers
             await _manager.BookService.UpdateOneBookAsync(id, bookDto, false);
             return NoContent();
         }
+
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteOneBookAsync([FromRoute(Name = "id")] int id)
         {
             await _manager.BookService.DeleteOneBookAsync(id, false);
             return NoContent();
         }
+
         [HttpPatch("{id:int}")]
         public async Task<IActionResult> PartiallyUpdateOneBookAsync([FromRoute(Name = "id")] int id, [FromBody] JsonPatchDocument<BookDtoForUpdate> bookPatch)
         {
@@ -83,6 +93,7 @@ namespace Presentation.Controllers
             await _manager.BookService.SaveChangesForPatchAsync(result.bookDtoForUpdate, result.book);
             return NoContent();
         }
+
         [HttpOptions]
         public IActionResult GetBooksOptions()
         {
